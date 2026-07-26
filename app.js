@@ -1,13 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const btnPublic = document.getElementById('btn-public');
   const btnCreate = document.getElementById('btn-create');
   const btnJoin = document.getElementById('btn-join');
   const btnLeave = document.getElementById('btn-leave');
   const btnSend = document.getElementById('btn-send');
-  const btnAttach = document.getElementById('btn-attach');
+
+  const btnCamera = document.getElementById('btn-camera');
+  const btnGallery = document.getElementById('btn-gallery');
+  const cameraInput = document.getElementById('camera-input');
+  const galleryInput = document.getElementById('gallery-input');
 
   const roomCodeInput = document.getElementById('room-code-input');
   const messageInput = document.getElementById('message-input');
-  const imageInput = document.getElementById('image-input');
 
   const introScreen = document.getElementById('intro-screen');
   const chatScreen = document.getElementById('chat-screen');
@@ -18,76 +22,125 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentRoomId = null;
   let realtimeSubscription = null;
 
-  // Gestione pulsante Fotocamera / Galleria
-  if (btnAttach) {
-    btnAttach.addEventListener('click', () => imageInput.click());
+  // Gestione click tasti Foto / Galleria
+  if (btnCamera && cameraInput) {
+    btnCamera.addEventListener('click', () => cameraInput.click());
+  }
+  if (btnGallery && galleryInput) {
+    btnGallery.addEventListener('click', () => galleryInput.click());
   }
 
-  if (imageInput) {
-    imageInput.addEventListener('change', async () => {
-      const file = imageInput.files[0];
-      if (!file || !currentRoomId) return;
+  // Caricamento Immagine
+  async function handleImageUpload(inputElement, buttonElement, defaultIcon) {
+    const file = inputElement.files[0];
+    if (!file || !currentRoomId) return;
 
-      btnAttach.innerText = '⏳';
+    buttonElement.innerText = '⏳';
 
-      const fileName = `${Date.now()}_${file.name}`;
-      const { data, error } = await supabase.storage
-        .from('chat-photos')
-        .upload(fileName, file);
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+
+    const { data, error } = await supabase.storage
+      .from('chat-photos')
+      .upload(fileName, file);
+
+    if (error) {
+      alert('Errore caricamento foto: ' + error.message);
+      buttonElement.innerText = defaultIcon;
+      return;
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from('chat-photos')
+      .getPublicUrl(fileName);
+
+    const { error: msgError } = await supabase.from('messages').insert([{
+      room_id: currentRoomId,
+      sender_id: userId,
+      content: `[IMG]${publicUrlData.publicUrl}`
+    }]);
+
+    if (msgError) {
+      alert('Errore invio messaggio foto: ' + msgError.message);
+    }
+
+    inputElement.value = '';
+    buttonElement.innerText = defaultIcon;
+  }
+
+  if (cameraInput) {
+    cameraInput.addEventListener('change', () => handleImageUpload(cameraInput, btnCamera, '📷'));
+  }
+  if (galleryInput) {
+    galleryInput.addEventListener('change', () => handleImageUpload(galleryInput, btnGallery, '🖼️'));
+  }
+
+  // ENTRA NELLA CHAT PUBBLICA
+  if (btnPublic) {
+    btnPublic.addEventListener('click', async () => {
+      // 1. Cerca se la stanza PUBBLICA esiste
+      let { data, error } = await supabase
+        .from('rooms')
+        .select('*')
+        .eq('code', 'PUBBLICA')
+        .maybeSingle();
 
       if (error) {
-        alert('Errore invio foto: ' + error.message);
-        btnAttach.innerText = '📷';
+        alert('Errore ricerca stanza pubblica: ' + error.message);
         return;
       }
 
-      const { data: publicUrlData } = supabase.storage
-        .from('chat-photos')
-        .getPublicUrl(fileName);
+      // 2. Se non esiste, la crea immediatamente
+      if (!data) {
+        const { data: newRoom, error: createError } = await supabase
+          .from('rooms')
+          .insert([{ code: 'PUBBLICA' }])
+          .select()
+          .single();
 
-      await supabase.from('messages').insert([{
-        room_id: currentRoomId,
-        sender_id: userId,
-        content: `[IMG]${publicUrlData.publicUrl}`
-      }]);
-
-      imageInput.value = '';
-      btnAttach.innerText = '📷';
-    });
-  }
-
-  // Crea Stanza
-  if (btnCreate) {
-    btnCreate.addEventListener('click', async () => {
-      try {
-        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-        const { data, error } = await supabase.from('rooms').insert([{ code }]).select().single();
-
-        if (error) {
-          alert('Errore creazione stanza: ' + error.message);
+        if (createError) {
+          alert('Errore creazione stanza pubblica: ' + createError.message);
           return;
         }
-        enterRoom(data.id, data.code);
-      } catch (err) {
-        alert('Errore imprevisto: ' + err.message);
+        data = newRoom;
       }
+
+      enterRoom(data.id, 'PUBBLICA');
     });
   }
 
-  // Entra in Stanza
+  // CREA STANZA PRIVATA
+  if (btnCreate) {
+    btnCreate.addEventListener('click', async () => {
+      const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const { data, error } = await supabase
+        .from('rooms')
+        .insert([{ code }])
+        .select()
+        .single();
+
+      if (error) return alert('Errore creazione stanza: ' + error.message);
+      enterRoom(data.id, data.code);
+    });
+  }
+
+  // ENTRA IN PRIVATA
   if (btnJoin) {
     btnJoin.addEventListener('click', async () => {
       const code = roomCodeInput.value.trim().toUpperCase();
       if (!code) return alert('Inserisci un codice!');
 
-      const { data, error } = await supabase.from('rooms').select().eq('code', code).single();
+      const { data, error } = await supabase
+        .from('rooms')
+        .select('*')
+        .eq('code', code)
+        .maybeSingle();
 
       if (error || !data) return alert('Stanza non trovata!');
       enterRoom(data.id, data.code);
     });
   }
 
-  // Entra nella schermata chat
   function enterRoom(roomId, code) {
     currentRoomId = roomId;
     roomCodeDisplay.innerText = code;
@@ -98,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
     listenToMessages();
   }
 
-  // Esci dalla chat
   if (btnLeave) {
     btnLeave.addEventListener('click', () => {
       if (realtimeSubscription) supabase.removeChannel(realtimeSubscription);
@@ -109,11 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Invia Messaggio
-  if (btnSend) {
-    btnSend.addEventListener('click', sendMessage);
-  }
-  
+  if (btnSend) btnSend.addEventListener('click', sendMessage);
   if (messageInput) {
     messageInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') sendMessage();
@@ -132,14 +180,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }]);
   }
 
-  // Carica messaggi esistenti
   async function loadMessages() {
-    const { data } = await supabase.from('messages').select().eq('room_id', currentRoomId).order('created_at', { ascending: true });
+    const { data } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('room_id', currentRoomId)
+      .order('created_at', { ascending: true });
+
     messagesContainer.innerHTML = '';
     if (data) data.forEach(renderMessage);
   }
 
-  // Ascolta nuovi messaggi
   function listenToMessages() {
     realtimeSubscription = supabase
       .channel('room-' + currentRoomId)
@@ -149,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
       .subscribe();
   }
 
-  // Mostra messaggio o immagine a schermo
   function renderMessage(msg) {
     const div = document.createElement('div');
     div.classList.add('message');
@@ -157,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (msg.content.startsWith('[IMG]')) {
       const imgUrl = msg.content.replace('[IMG]', '');
-      div.innerHTML = `<img src="${imgUrl}" alt="foto">`;
+      div.innerHTML = `<img src="${imgUrl}" alt="foto" style="max-width: 100%; border-radius: 8px;">`;
     } else {
       div.innerText = msg.content;
     }
