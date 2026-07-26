@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ChatLampo</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -17,12 +17,10 @@
 
     <!-- SCHERMATA INIZIALE -->
     <div id="intro-screen">
-      <!-- Chat Pubblica -->
       <button id="btn-public" class="btn primary" style="background-color: #2e7d32;">🌐 Entra nella Chat Pubblica</button>
-      
+
       <div class="divider">oppure chat privata</div>
 
-      <!-- Chat Privata -->
       <button id="btn-create" class="btn secondary">Crea Stanza Privata</button>
       <input type="text" id="room-code-input" placeholder="Inserisci codice stanza..." style="text-transform: uppercase;">
       <button id="btn-join" class="btn secondary">Entra in Privata</button>
@@ -37,17 +35,14 @@
 
       <div id="messages" class="messages-box"></div>
 
-      <!-- BARRA IN BASSO (FOTOCAMERA, GALLERIA, TESTO, INVIA) -->
+      <!-- BARRA INPUT BLOCCATA IN BASSO -->
       <div class="input-box">
-        <!-- Tasto Fotocamera -->
         <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;">
         <button id="btn-camera" class="btn-icon" title="Scatta Foto">📷</button>
 
-        <!-- Tasto Galleria -->
         <input type="file" id="gallery-input" accept="image/*" style="display: none;">
         <button id="btn-gallery" class="btn-icon" title="Scegli da Galleria">🖼️</button>
-        
-        <!-- Input Messaggio -->
+
         <input type="text" id="message-input" placeholder="Scrivi un messaggio...">
         <button id="btn-send" class="btn primary">Invia</button>
       </div>
