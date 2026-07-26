@@ -2,12 +2,12 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
-  background-color: #1a1512;
-  color: #e6d7ce;
+  background-color: #1a1a1a;
+  color: #f5f5f5;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,84 +18,52 @@ body {
 .chat-container {
   width: 100%;
   max-width: 450px;
-  background: #2b231e;
+  height: 90vh;
+  background-color: #2b2b2b;
   border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
-  height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 
 .header {
+  padding: 15px;
+  background-color: #383838;
   text-align: center;
-  margin-bottom: 15px;
+  border-bottom: 1px solid #444;
 }
 
 .header h1 {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   color: #d4a373;
 }
 
 .subtitle {
-  font-size: 0.85rem;
-  color: #a39285;
+  font-size: 0.8rem;
+  color: #aaa;
 }
 
+/* SCHERMATA INIZIALE */
 #intro-screen {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  padding: 20px;
   gap: 12px;
-  margin-top: auto;
-  margin-bottom: auto;
 }
 
 .divider {
   text-align: center;
-  color: #7a6a5d;
-  font-size: 0.8rem;
+  color: #888;
+  font-size: 0.85rem;
+  margin: 5px 0;
 }
 
-input[type="text"] {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #4a3d34;
-  background: #1a1512;
-  color: #fff;
-  font-size: 1rem;
-  outline: none;
-}
-
-.btn {
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.btn.primary {
-  background: #d4a373;
-  color: #1a1512;
-}
-
-.btn.secondary {
-  background: #4a3d34;
-  color: #d4a373;
-}
-
-.btn-danger {
-  background: #e63946;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
+/* SCHERMATA CHAT */
 #chat-screen {
+  flex: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -105,24 +73,24 @@ input[type="text"] {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #4a3d34;
-  margin-bottom: 10px;
+  padding: 10px 15px;
+  background-color: #333;
+  border-bottom: 1px solid #444;
 }
 
 .messages-box {
   flex: 1;
+  padding: 15px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-right: 5px;
-  margin-bottom: 10px;
+  background-color: #222;
 }
 
 .message {
-  max-width: 80%;
-  padding: 10px;
+  max-width: 75%;
+  padding: 10px 14px;
   border-radius: 12px;
   font-size: 0.95rem;
   word-break: break-word;
@@ -130,14 +98,16 @@ input[type="text"] {
 
 .message.mine {
   align-self: flex-end;
-  background: #d4a373;
-  color: #1a1512;
+  background-color: #d4a373;
+  color: #1a1a1a;
+  border-bottom-right-radius: 2px;
 }
 
 .message.theirs {
   align-self: flex-start;
-  background: #4a3d34;
-  color: #e6d7ce;
+  background-color: #444;
+  color: #fff;
+  border-bottom-left-radius: 2px;
 }
 
 .message img {
@@ -146,17 +116,71 @@ input[type="text"] {
   display: block;
 }
 
+/* BARRA IN BASSO (FOTOCAMERA, GALLERIA, CAMPO TESTO, INVIA) */
 .input-box {
   display: flex;
-  gap: 8px;
   align-items: center;
+  padding: 10px;
+  background-color: #333;
+  gap: 6px;
+  border-top: 1px solid #444;
 }
 
+/* Tasti Fotocamera e Galleria */
 .btn-icon {
-  background: #4a3d34;
+  background-color: #444;
   border: none;
-  font-size: 1.3rem;
-  padding: 8px 12px;
+  font-size: 1.2rem;
+  padding: 8px;
   border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+}
+
+.btn-icon:active {
+  background-color: #555;
+}
+
+/* Campi di input testo */
+.input-box input[type="text"], #intro-screen input[type="text"] {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background-color: #222;
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+/* Bottoni principali */
+.btn {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background-color: #d4a373;
+  color: #1a1a1a;
+}
+
+.btn.secondary {
+  background-color: #555;
+  color: #fff;
+}
+
+.btn-danger {
+  background-color: #e63946;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
 }
