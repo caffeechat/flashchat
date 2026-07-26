@@ -15,15 +15,20 @@
       <p class="subtitle">La tua pausa, la tua chat temporanea.</p>
     </div>
 
-    <!-- Schermata di benvenuto -->
+    <!-- SCHERMATA INIZIALE -->
     <div id="intro-screen">
-      <button id="btn-create" class="btn primary">Crea Nuova Stanza</button>
-      <div class="divider">oppure</div>
+      <!-- Chat Pubblica -->
+      <button id="btn-public" class="btn primary" style="background-color: #2e7d32;">🌐 Entra nella Chat Pubblica</button>
+      
+      <div class="divider">oppure chat privata</div>
+
+      <!-- Chat Privata -->
+      <button id="btn-create" class="btn secondary">Crea Stanza Privata</button>
       <input type="text" id="room-code-input" placeholder="Inserisci codice stanza..." style="text-transform: uppercase;">
-      <button id="btn-join" class="btn secondary">Entra</button>
+      <button id="btn-join" class="btn secondary">Entra in Privata</button>
     </div>
 
-    <!-- Schermata Chat -->
+    <!-- SCHERMATA CHAT -->
     <div id="chat-screen" style="display: none;">
       <div class="room-info">
         <span>Stanza: <strong id="room-code-display">---</strong></span>
@@ -32,11 +37,17 @@
 
       <div id="messages" class="messages-box"></div>
 
+      <!-- BARRA IN BASSO (FOTOCAMERA, GALLERIA, TESTO, INVIA) -->
       <div class="input-box">
-        <!-- Input file nascosto: accetta fotocamera e galleria -->
-        <input type="file" id="image-input" accept="image/*" style="display: none;">
-        <button id="btn-attach" class="btn-icon">📷</button>
+        <!-- Tasto Fotocamera -->
+        <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;">
+        <button id="btn-camera" class="btn-icon" title="Scatta Foto">📷</button>
+
+        <!-- Tasto Galleria -->
+        <input type="file" id="gallery-input" accept="image/*" style="display: none;">
+        <button id="btn-gallery" class="btn-icon" title="Scegli da Galleria">🖼️</button>
         
+        <!-- Input Messaggio -->
         <input type="text" id="message-input" placeholder="Scrivi un messaggio...">
         <button id="btn-send" class="btn primary">Invia</button>
       </div>
