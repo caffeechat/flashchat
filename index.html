@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ChatLampo</title>
+
+  <!-- Collegamento Manifest e Icona PWA per Installazione Nativa -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#252525">
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/9374/9374982.png">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/9374/9374982.png">
+
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -59,5 +66,12 @@
 
   <script src="supabase.js"></script>
   <script src="app.js"></script>
+
+  <!-- Attivazione Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
 </body>
 </html>
