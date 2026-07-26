@@ -9,45 +9,53 @@
 </head>
 <body>
 
-  <div class="chat-container">
-    <div class="header">
+  <main class="app-viewport">
+    
+    <!-- INTESTAZIONE -->
+    <header class="app-header">
       <h1>☕ ChatLampo</h1>
-      <p class="subtitle">La tua pausa, la tua chat temporanea.</p>
-    </div>
+      <p>La tua pausa, la tua chat temporanea.</p>
+    </header>
 
-    <!-- SCHERMATA INIZIALE -->
-    <div id="intro-screen">
-      <button id="btn-public" class="btn primary" style="background-color: #2e7d32;">🌐 Entra nella Chat Pubblica</button>
+    <!-- SCHERMATA HOME / SELEZIONE STANZA -->
+    <section id="intro-screen" class="screen-panel">
+      <button id="btn-public" class="btn btn-success">🌐 Entra nella Chat Pubblica</button>
+      
+      <div class="divider"><span>oppure stanza privata</span></div>
 
-      <div class="divider">oppure chat privata</div>
-
-      <button id="btn-create" class="btn secondary">Crea Stanza Privata</button>
-      <input type="text" id="room-code-input" placeholder="Inserisci codice stanza..." style="text-transform: uppercase;">
-      <button id="btn-join" class="btn secondary">Entra in Privata</button>
-    </div>
+      <div class="private-box">
+        <button id="btn-create" class="btn btn-secondary">Crea Stanza Privata</button>
+        <div class="join-row">
+          <input type="text" id="room-code-input" placeholder="Codice Stanza" maxlength="10">
+          <button id="btn-join" class="btn btn-primary">Entra</button>
+        </div>
+      </div>
+    </section>
 
     <!-- SCHERMATA CHAT -->
-    <div id="chat-screen" style="display: none;">
-      <div class="room-info">
+    <section id="chat-screen" class="screen-panel" style="display: none;">
+      
+      <div class="room-bar">
         <span>Stanza: <strong id="room-code-display">---</strong></span>
         <button id="btn-leave" class="btn-danger">Esci</button>
       </div>
 
-      <div id="messages" class="messages-box"></div>
+      <div id="messages" class="chat-history"></div>
 
-      <!-- BARRA INPUT BLOCCATA IN BASSO -->
-      <div class="input-box">
-        <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;">
-        <button id="btn-camera" class="btn-icon" title="Scatta Foto">📷</button>
+      <div class="chat-controls">
+        <input type="file" id="camera-input" accept="image/*" capture="environment" hidden>
+        <button id="btn-camera" class="icon-btn" title="Scatta foto">📷</button>
 
-        <input type="file" id="gallery-input" accept="image/*" style="display: none;">
-        <button id="btn-gallery" class="btn-icon" title="Scegli da Galleria">🖼️</button>
+        <input type="file" id="gallery-input" accept="image/*" hidden>
+        <button id="btn-gallery" class="icon-btn" title="Galleria">🖼️</button>
 
         <input type="text" id="message-input" placeholder="Scrivi un messaggio...">
-        <button id="btn-send" class="btn primary">Invia</button>
+        <button id="btn-send" class="btn btn-primary">Invia</button>
       </div>
-    </div>
-  </div>
+
+    </section>
+
+  </main>
 
   <script src="supabase.js"></script>
   <script src="app.js"></script>
