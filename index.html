@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatLampo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>☕ ChatLampo</h1>
+    <p>La tua pausa, la tua chat temporanea.</p>
+
+    <!-- Schermata di Benvenuto -->
+    <div id="welcome-screen" class="card">
+      <h2>Entra in una Stanza</h2>
+      <button id="btn-create" class="btn">Crea Nuova Stanza</button>
+      <div class="divider">oppure</div>
+      <input type="text" id="room-code-input" placeholder="Inserisci codice stanza..." maxlength="8">
+      <button id="btn-join" class="btn btn-secondary">Entra</button>
+    </div>
+
+    <!-- Schermata della Chat -->
+    <div id="chat-screen" class="card hidden">
+      <div class="chat-header">
+        <span>Stanza: <strong id="display-room-code"></strong></span>
+        <button id="btn-leave" class="btn-small">Esci</button>
+      </div>
+      <div id="messages-container" class="messages-box"></div>
+      <div class="input-box">
+        <input type="text" id="message-input" placeholder="Scrivi un messaggio...">
+        <button id="btn-send" class="btn">Invia</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
