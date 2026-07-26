@@ -147,6 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${currentRoomId}` }, (payload) => {
         renderMessage(payload.new);
       })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages', filter: `room_id=eq.${currentRoomId}` }, (payload) => {
+        const el = document.querySelector(`[data-id="${payload.old.id}"]`);
+        if (el) el.remove();
+      })
       .subscribe();
   }
 
@@ -154,18 +158,66 @@ document.addEventListener('DOMContentLoaded', () => {
     const div = document.createElement('div');
     div.classList.add('message');
     div.classList.add(msg.sender_id === userId ? 'mine' : 'theirs');
+    div.dataset.id = msg.id;
+
+    const isMine = msg.sender_id === userId;
 
     if (msg.content.startsWith('[IMG]')) {
       const imgUrl = msg.content.replace('[IMG]', '');
+      
+      const imgContainer = document.createElement('div');
+      imgContainer.classList.add('img-container');
+
       const img = document.createElement('img');
       img.src = imgUrl;
       img.classList.add('message-img');
-      div.appendChild(img);
+      imgContainer.appendChild(img);
+
+      if (isMine) {
+        const delBtn = document.createElement('button');
+        delBtn.classList.add('delete-btn');
+        delBtn.innerHTML = '🗑️';
+        delBtn.onclick = () => deleteMessage(msg.id, imgUrl, div);
+        imgContainer.appendChild(delBtn);
+      }
+
+      div.appendChild(imgContainer);
     } else {
-      div.innerText = msg.content;
+      const textSpan = document.createElement('span');
+      textSpan.innerText = msg.content;
+      div.appendChild(textSpan);
+
+      if (isMine) {
+        const delBtn = document.createElement('button');
+        delBtn.classList.add('delete-btn-text');
+        delBtn.innerHTML = '✕';
+        delBtn.onclick = () => deleteMessage(msg.id, null, div);
+        div.appendChild(delBtn);
+      }
     }
 
     messagesContainer.appendChild(div);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  async function deleteMessage(msgId, imgUrl, element) {
+    if (!confirm('Vuoi cancellare questo elemento?')) return;
+
+    if (imgUrl) {
+      try {
+        const urlParts = imgUrl.split('/chat-photos/');
+        if (urlParts.length > 1) {
+          const filePath = urlParts[1];
+          await supabase.storage.from('chat-photos').remove([filePath]);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    const { error } = await supabase.from('messages').delete().eq('id', msgId);
+    if (!error) {
+      element.remove();
+    }
   }
 });
