@@ -22,13 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentRoomId = null;
   let realtimeSubscription = null;
 
-  // Gestione click tasti Foto / Galleria
-  if (btnCamera && cameraInput) {
-    btnCamera.addEventListener('click', () => cameraInput.click());
-  }
-  if (btnGallery && galleryInput) {
-    btnGallery.addEventListener('click', () => galleryInput.click());
-  }
+  // Gestione bottoni Foto
+  if (btnCamera && cameraInput) btnCamera.addEventListener('click', () => cameraInput.click());
+  if (btnGallery && galleryInput) btnGallery.addEventListener('click', () => galleryInput.click());
 
   // Caricamento Immagine
   async function handleImageUpload(inputElement, buttonElement, defaultIcon) {
@@ -54,89 +50,47 @@ document.addEventListener('DOMContentLoaded', () => {
       .from('chat-photos')
       .getPublicUrl(fileName);
 
-    const { error: msgError } = await supabase.from('messages').insert([{
+    await supabase.from('messages').insert([{
       room_id: currentRoomId,
       sender_id: userId,
       content: `[IMG]${publicUrlData.publicUrl}`
     }]);
 
-    if (msgError) {
-      alert('Errore invio messaggio foto: ' + msgError.message);
-    }
-
     inputElement.value = '';
     buttonElement.innerText = defaultIcon;
   }
 
-  if (cameraInput) {
-    cameraInput.addEventListener('change', () => handleImageUpload(cameraInput, btnCamera, '📷'));
-  }
-  if (galleryInput) {
-    galleryInput.addEventListener('change', () => handleImageUpload(galleryInput, btnGallery, '🖼️'));
-  }
+  if (cameraInput) cameraInput.addEventListener('change', () => handleImageUpload(cameraInput, btnCamera, '📷'));
+  if (galleryInput) galleryInput.addEventListener('change', () => handleImageUpload(galleryInput, btnGallery, '🖼️'));
 
-  // ENTRA NELLA CHAT PUBBLICA
+  // Chat Pubblica
   if (btnPublic) {
     btnPublic.addEventListener('click', async () => {
-      // 1. Cerca se la stanza PUBBLICA esiste
-      let { data, error } = await supabase
-        .from('rooms')
-        .select('*')
-        .eq('code', 'PUBBLICA')
-        .maybeSingle();
-
-      if (error) {
-        alert('Errore ricerca stanza pubblica: ' + error.message);
-        return;
-      }
-
-      // 2. Se non esiste, la crea immediatamente
+      let { data } = await supabase.from('rooms').select('*').eq('code', 'PUBBLICA').maybeSingle();
       if (!data) {
-        const { data: newRoom, error: createError } = await supabase
-          .from('rooms')
-          .insert([{ code: 'PUBBLICA' }])
-          .select()
-          .single();
-
-        if (createError) {
-          alert('Errore creazione stanza pubblica: ' + createError.message);
-          return;
-        }
+        const { data: newRoom } = await supabase.from('rooms').insert([{ code: 'PUBBLICA' }]).select().single();
         data = newRoom;
       }
-
       enterRoom(data.id, 'PUBBLICA');
     });
   }
 
-  // CREA STANZA PRIVATA
+  // Stanza Privata
   if (btnCreate) {
     btnCreate.addEventListener('click', async () => {
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-      const { data, error } = await supabase
-        .from('rooms')
-        .insert([{ code }])
-        .select()
-        .single();
-
-      if (error) return alert('Errore creazione stanza: ' + error.message);
-      enterRoom(data.id, data.code);
+      const { data } = await supabase.from('rooms').insert([{ code }]).select().single();
+      if (data) enterRoom(data.id, data.code);
     });
   }
 
-  // ENTRA IN PRIVATA
   if (btnJoin) {
     btnJoin.addEventListener('click', async () => {
       const code = roomCodeInput.value.trim().toUpperCase();
       if (!code) return alert('Inserisci un codice!');
 
-      const { data, error } = await supabase
-        .from('rooms')
-        .select('*')
-        .eq('code', code)
-        .maybeSingle();
-
-      if (error || !data) return alert('Stanza non trovata!');
+      const { data } = await supabase.from('rooms').select('*').eq('code', code).maybeSingle();
+      if (!data) return alert('Stanza non trovata!');
       enterRoom(data.id, data.code);
     });
   }
@@ -207,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (msg.content.startsWith('[IMG]')) {
       const imgUrl = msg.content.replace('[IMG]', '');
-      div.innerHTML = `<img src="${imgUrl}" alt="foto" style="max-width: 100%; border-radius: 8px;">`;
+      div.innerHTML = `<img src="${imgUrl}" alt="foto">`;
     } else {
       div.innerText = msg.content;
     }
