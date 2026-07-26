@@ -22,11 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentRoomId = null;
   let realtimeSubscription = null;
 
-  // Gestione bottoni Foto
   if (btnCamera && cameraInput) btnCamera.addEventListener('click', () => cameraInput.click());
   if (btnGallery && galleryInput) btnGallery.addEventListener('click', () => galleryInput.click());
 
-  // Caricamento Immagine
   async function handleImageUpload(inputElement, buttonElement, defaultIcon) {
     const file = inputElement.files[0];
     if (!file || !currentRoomId) return;
@@ -36,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('chat-photos')
       .upload(fileName, file);
 
@@ -63,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (cameraInput) cameraInput.addEventListener('change', () => handleImageUpload(cameraInput, btnCamera, '📷'));
   if (galleryInput) galleryInput.addEventListener('change', () => handleImageUpload(galleryInput, btnGallery, '🖼️'));
 
-  // Chat Pubblica
   if (btnPublic) {
     btnPublic.addEventListener('click', async () => {
       let { data } = await supabase.from('rooms').select('*').eq('code', 'PUBBLICA').maybeSingle();
@@ -75,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Stanza Privata
   if (btnCreate) {
     btnCreate.addEventListener('click', async () => {
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -161,7 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (msg.content.startsWith('[IMG]')) {
       const imgUrl = msg.content.replace('[IMG]', '');
-      div.innerHTML = `<img src="${imgUrl}" alt="foto">`;
+      const img = document.createElement('img');
+      img.src = imgUrl;
+      img.classList.add('message-img');
+      div.appendChild(img);
     } else {
       div.innerText = msg.content;
     }
