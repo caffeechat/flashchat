@@ -24,7 +24,7 @@ body {
 .app-viewport {
   width: 100%;
   max-width: 480px;
-  height: 100dvh; /* Dynamic Viewport Height per Safari e Android browser */
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   background-color: #1e1e1e;
@@ -64,7 +64,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* Fondamentale per il corretto scorrimento interno */
+  min-height: 0;
 }
 
 /* Home Screen */
@@ -128,12 +128,14 @@ body {
 
 /* Messaggi */
 .message {
-  max-width: 75%;
+  max-width: 80%;
   padding: 8px 12px;
   border-radius: 10px;
   font-size: 0.95rem;
   line-height: 1.4;
   word-break: break-word;
+  display: flex;
+  align-items: center;
 }
 
 .message.mine {
@@ -150,11 +152,45 @@ body {
   border-bottom-left-radius: 2px;
 }
 
+/* Immagini e Bottone Cancella */
+.img-container {
+  position: relative;
+  display: inline-block;
+}
+
 .message-img {
   width: 100%;
   max-width: 240px;
+  max-height: 200px;
+  object-fit: cover;
   border-radius: 8px;
   display: block;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn-text {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 0.8rem;
+  margin-left: 8px;
+  cursor: pointer;
 }
 
 /* Controlli Chat (Barra di Input) */
